@@ -6,9 +6,9 @@ package provider
 import (
 	"context"
 	"fmt"
+	"strconv"
 	spade "terraform-provider-spade/internal/client"
 
-	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
@@ -210,5 +210,20 @@ func (r *SpadeExecutorResource) Delete(ctx context.Context, req resource.DeleteR
 }
 
 func (r *SpadeExecutorResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	id, err := strconv.ParseInt(req.ID, 10, 64)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unexpected Import Identifier",
+			fmt.Sprintf("Expected a numeric resource ID, got: %s", req.ID),
+		)
+		return
+	}
+	resp.Diagnostics.Append(
+		resp.State.Set(
+			ctx,
+			&SpadeExecutorResourceModel{
+				Id: types.Int64Value(id),
+			},
+		)...,
+	)
 }
