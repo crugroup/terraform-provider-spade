@@ -10,35 +10,42 @@ import (
 )
 
 type SpadeFileCreateRequest struct {
-	Code         string                 `json:"code"`
-	Description  string                 `json:"description"`
-	Tags         []string               `json:"tags"`
-	Format       int64                  `json:"format"`
-	Processor    int64                  `json:"processor"`
-	SystemParams map[string]interface{} `json:"system_params"`
-	UserParams   map[string]interface{} `json:"user_params"`
+	Code          string                 `json:"code"`
+	Description   string                 `json:"description"`
+	Tags          []string               `json:"tags"`
+	Format        int64                  `json:"format"`
+	Processor     int64                  `json:"processor"`
+	SystemParams  map[string]interface{} `json:"system_params"`
+	UserParams    map[string]interface{} `json:"user_params"`
+	LinkedProcess *int64                 `json:"linked_process"`
 }
 
 type SpadeFileReadResponse struct {
-	Id           int64                  `json:"id"`
-	Code         string                 `json:"code"`
-	Description  string                 `json:"description"`
-	Tags         []string               `json:"tags"`
-	Format       int64                  `json:"format"`
-	Processor    int64                  `json:"processor"`
-	SystemParams map[string]interface{} `json:"system_params"`
-	UserParams   map[string]interface{} `json:"user_params"`
+	Id            int64                  `json:"id"`
+	Code          string                 `json:"code"`
+	Description   string                 `json:"description"`
+	Tags          []string               `json:"tags"`
+	Format        int64                  `json:"format"`
+	Processor     int64                  `json:"processor"`
+	SystemParams  map[string]interface{} `json:"system_params"`
+	UserParams    map[string]interface{} `json:"user_params"`
+	LinkedProcess int64                  `json:"linked_process"`
 }
 
-func (c *SpadeClient) CreateFile(code, description string, tags []string, format, processor int64, systemParams, userParams map[string]interface{}) (*SpadeFileReadResponse, error) {
+func (c *SpadeClient) CreateFile(code, description string, tags []string, format, processor int64, systemParams, userParams map[string]interface{}, linkedProcess int64) (*SpadeFileReadResponse, error) {
+	linkedProcessPtr := &linkedProcess
+	if linkedProcess == 0 {
+		linkedProcessPtr = nil
+	}
 	httpReqBody, err := json.Marshal(SpadeFileCreateRequest{
-		Code:         code,
-		Description:  description,
-		Tags:         tags,
-		Format:       format,
-		Processor:    processor,
-		SystemParams: systemParams,
-		UserParams:   userParams,
+		Code:          code,
+		Description:   description,
+		Tags:          tags,
+		Format:        format,
+		Processor:     processor,
+		SystemParams:  systemParams,
+		UserParams:    userParams,
+		LinkedProcess: linkedProcessPtr,
 	})
 	if err != nil {
 		return nil, err
@@ -105,15 +112,20 @@ func (c *SpadeClient) ReadFile(id int64) (*SpadeFileReadResponse, error) {
 	return &resp, nil
 }
 
-func (c *SpadeClient) UpdateFile(id int64, code, description string, tags []string, format, processor int64, systemParams, userParams map[string]interface{}) (*SpadeFileReadResponse, error) {
+func (c *SpadeClient) UpdateFile(id int64, code, description string, tags []string, format, processor int64, systemParams, userParams map[string]interface{}, linkedProcess int64) (*SpadeFileReadResponse, error) {
+	linkedProcessPtr := &linkedProcess
+	if linkedProcess == 0 {
+		linkedProcessPtr = nil
+	}
 	httpReqBody, err := json.Marshal(SpadeFileCreateRequest{
-		Code:         code,
-		Description:  description,
-		Tags:         tags,
-		Format:       format,
-		Processor:    processor,
-		SystemParams: systemParams,
-		UserParams:   userParams,
+		Code:          code,
+		Description:   description,
+		Tags:          tags,
+		Format:        format,
+		Processor:     processor,
+		SystemParams:  systemParams,
+		UserParams:    userParams,
+		LinkedProcess: linkedProcessPtr,
 	})
 	if err != nil {
 		return nil, err

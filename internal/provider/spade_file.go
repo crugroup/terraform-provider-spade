@@ -37,14 +37,15 @@ type SpadeFileResource struct {
 
 // SpadeFileResourceModel describes the resource data model.
 type SpadeFileResourceModel struct {
-	Id           types.Int64          `tfsdk:"id"`
-	Code         types.String         `tfsdk:"code"`
-	Description  types.String         `tfsdk:"description"`
-	Tags         types.Set            `tfsdk:"tags"`
-	Format       types.Int64          `tfsdk:"format"`
-	Processor    types.Int64          `tfsdk:"processor"`
-	SystemParams jsontypes.Normalized `tfsdk:"system_params"`
-	UserParams   jsontypes.Normalized `tfsdk:"user_params"`
+	Id            types.Int64          `tfsdk:"id"`
+	Code          types.String         `tfsdk:"code"`
+	Description   types.String         `tfsdk:"description"`
+	Tags          types.Set            `tfsdk:"tags"`
+	Format        types.Int64          `tfsdk:"format"`
+	Processor     types.Int64          `tfsdk:"processor"`
+	SystemParams  jsontypes.Normalized `tfsdk:"system_params"`
+	UserParams    jsontypes.Normalized `tfsdk:"user_params"`
+	LinkedProcess types.Int64          `tfsdk:"linked_process"`
 }
 
 func (r *SpadeFileResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -95,6 +96,10 @@ func (r *SpadeFileResource) Schema(ctx context.Context, req resource.SchemaReque
 				Computed:            true,
 				CustomType:          jsontypes.NormalizedType{},
 				Default:             stringdefault.StaticString("{}"),
+			},
+			"linked_process": schema.Int64Attribute{
+				MarkdownDescription: "Identifier for linked process",
+				Optional:            true,
 			},
 			"id": schema.Int64Attribute{
 				Computed:            true,
@@ -164,6 +169,7 @@ func (r *SpadeFileResource) Create(ctx context.Context, req resource.CreateReque
 		data.Processor.ValueInt64(),
 		systemParamsJson,
 		userParamsJson,
+		data.LinkedProcess.ValueInt64(),
 	)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create file, got error: %s", err))
@@ -195,6 +201,10 @@ func (r *SpadeFileResource) Create(ctx context.Context, req resource.CreateReque
 	}
 	data.SystemParams = jsontypes.NewNormalizedValue(string(respSystemParams))
 	data.UserParams = jsontypes.NewNormalizedValue(string(respUserParams))
+	data.LinkedProcess = types.Int64Value(spadeResp.LinkedProcess)
+	if spadeResp.LinkedProcess == 0 {
+		data.LinkedProcess = basetypes.NewInt64Null()
+	}
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -240,6 +250,10 @@ func (r *SpadeFileResource) Read(ctx context.Context, req resource.ReadRequest, 
 	}
 	data.SystemParams = jsontypes.NewNormalizedValue(string(respSystemParams))
 	data.UserParams = jsontypes.NewNormalizedValue(string(respUserParams))
+	data.LinkedProcess = types.Int64Value(spadeResp.LinkedProcess)
+	if spadeResp.LinkedProcess == 0 {
+		data.LinkedProcess = basetypes.NewInt64Null()
+	}
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -283,6 +297,7 @@ func (r *SpadeFileResource) Update(ctx context.Context, req resource.UpdateReque
 		data.Processor.ValueInt64(),
 		systemParamsJson,
 		userParamsJson,
+		data.LinkedProcess.ValueInt64(),
 	)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update file, got error: %s", err))
@@ -314,6 +329,10 @@ func (r *SpadeFileResource) Update(ctx context.Context, req resource.UpdateReque
 	}
 	data.SystemParams = jsontypes.NewNormalizedValue(string(respSystemParams))
 	data.UserParams = jsontypes.NewNormalizedValue(string(respUserParams))
+	data.LinkedProcess = types.Int64Value(spadeResp.LinkedProcess)
+	if spadeResp.LinkedProcess == 0 {
+		data.LinkedProcess = basetypes.NewInt64Null()
+	}
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
