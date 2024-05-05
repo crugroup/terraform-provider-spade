@@ -6,6 +6,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	spade "terraform-provider-spade/internal/client"
 
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -26,7 +27,7 @@ func NewSpadeExecutorResource() resource.Resource {
 
 // SpadeExecutorResource defines the resource implementation.
 type SpadeExecutorResource struct {
-	Client *SpadeClient
+	Client *spade.SpadeClient
 }
 
 // SpadeExecutorResourceModel describes the resource data model.
@@ -85,12 +86,12 @@ func (r *SpadeExecutorResource) Configure(ctx context.Context, req resource.Conf
 		return
 	}
 
-	client, ok := req.ProviderData.(*SpadeClient)
+	client, ok := req.ProviderData.(*spade.SpadeClient)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
-			fmt.Sprintf("Expected *SpadeClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *spade.SpadeClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return

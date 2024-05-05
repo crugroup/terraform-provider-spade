@@ -7,19 +7,19 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	spade "terraform-provider-spade/internal/client"
 
+	"github.com/hashicorp/terraform-plugin-framework-jsontypes/jsontypes"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
-
-	"github.com/hashicorp/terraform-plugin-framework-jsontypes/jsontypes"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -32,7 +32,7 @@ func NewSpadeProcessResource() resource.Resource {
 
 // SpadeProcessResource defines the resource implementation.
 type SpadeProcessResource struct {
-	Client *SpadeClient
+	Client *spade.SpadeClient
 }
 
 // SpadeProcessResourceModel describes the resource data model.
@@ -40,7 +40,7 @@ type SpadeProcessResourceModel struct {
 	Id           types.Int64          `tfsdk:"id"`
 	Code         types.String         `tfsdk:"code"`
 	Description  types.String         `tfsdk:"description"`
-	Tags         types.List           `tfsdk:"tags"`
+	Tags         types.Set            `tfsdk:"tags"`
 	Executor     types.Int64          `tfsdk:"executor"`
 	SystemParams jsontypes.Normalized `tfsdk:"system_params"`
 	UserParams   jsontypes.Normalized `tfsdk:"user_params"`
@@ -66,12 +66,12 @@ func (r *SpadeProcessResource) Schema(ctx context.Context, req resource.SchemaRe
 				Computed:            true,
 				Default:             stringdefault.StaticString(""),
 			},
-			"tags": schema.ListAttribute{
+			"tags": schema.SetAttribute{
 				MarkdownDescription: "Tags for the executor",
 				ElementType:         types.StringType,
 				Optional:            true,
 				Computed:            true,
-				Default:             listdefault.StaticValue(basetypes.NewListValueMust(types.StringType, []attr.Value{})),
+				Default:             setdefault.StaticValue(basetypes.NewSetValueMust(types.StringType, []attr.Value{})),
 			},
 			"executor": schema.Int64Attribute{
 				MarkdownDescription: "Identifier for executor",
@@ -108,12 +108,12 @@ func (r *SpadeProcessResource) Configure(ctx context.Context, req resource.Confi
 		return
 	}
 
-	client, ok := req.ProviderData.(*SpadeClient)
+	client, ok := req.ProviderData.(*spade.SpadeClient)
 
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
-			fmt.Sprintf("Expected *SpadeClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
+			fmt.Sprintf("Expected *spade.SpadeClient, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
 		return
@@ -168,7 +168,7 @@ func (r *SpadeProcessResource) Create(ctx context.Context, req resource.CreateRe
 	data.Id = types.Int64Value(spadeResp.Id)
 	data.Code = types.StringValue(spadeResp.Code)
 	data.Description = types.StringValue(spadeResp.Description)
-	respTags, diag := basetypes.NewListValueFrom(ctx, types.StringType, spadeResp.Tags)
+	respTags, diag := basetypes.NewSetValueFrom(ctx, types.StringType, spadeResp.Tags)
 	resp.Diagnostics.Append(diag...)
 	if resp.Diagnostics.HasError() {
 		resp.Diagnostics.AddError("Client Error", "fuck1")
@@ -213,7 +213,7 @@ func (r *SpadeProcessResource) Read(ctx context.Context, req resource.ReadReques
 	data.Id = types.Int64Value(spadeResp.Id)
 	data.Code = types.StringValue(spadeResp.Code)
 	data.Description = types.StringValue(spadeResp.Description)
-	respTags, diag := basetypes.NewListValueFrom(ctx, types.StringType, spadeResp.Tags)
+	respTags, diag := basetypes.NewSetValueFrom(ctx, types.StringType, spadeResp.Tags)
 	resp.Diagnostics.Append(diag...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -284,7 +284,7 @@ func (r *SpadeProcessResource) Update(ctx context.Context, req resource.UpdateRe
 	data.Id = types.Int64Value(spadeResp.Id)
 	data.Code = types.StringValue(spadeResp.Code)
 	data.Description = types.StringValue(spadeResp.Description)
-	respTags, diag := basetypes.NewListValueFrom(ctx, types.StringType, spadeResp.Tags)
+	respTags, diag := basetypes.NewSetValueFrom(ctx, types.StringType, spadeResp.Tags)
 	resp.Diagnostics.Append(diag...)
 	if resp.Diagnostics.HasError() {
 		resp.Diagnostics.AddError("Client Error", "fuck1")

@@ -15,6 +15,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+
+	spade "terraform-provider-spade/internal/client"
 )
 
 // Ensure SpadeProvider satisfies various provider interfaces.
@@ -74,7 +76,7 @@ func (p *SpadeProvider) Configure(ctx context.Context, req provider.ConfigureReq
 	// if data.Endpoint.IsNull() { /* ... */ }
 
 	// Example client configuration for data sources and resource
-	client := &SpadeClient{
+	client := &spade.SpadeClient{
 		ApiUrl:     data.URL.ValueString(),
 		HttpClient: http.DefaultClient,
 	}
