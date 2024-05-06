@@ -147,8 +147,12 @@ func (r *SpadeProcessResource) Create(ctx context.Context, req resource.CreateRe
 	tags := data.Tags.Elements()
 	tagStrings := make([]string, len(tags))
 	for i, tag := range tags {
-		str := tag.(types.String).ValueString()
-		tagStrings[i] = str
+		str, ok := tag.(types.String)
+		if !ok {
+			resp.Diagnostics.AddError("Client Error", "Failed to convert tag to string, please report issue to provider developers")
+			return
+		}
+		tagStrings[i] = str.ValueString()
 	}
 
 	spadeResp, err := r.Client.CreateProcess(
@@ -262,8 +266,12 @@ func (r *SpadeProcessResource) Update(ctx context.Context, req resource.UpdateRe
 	tags := data.Tags.Elements()
 	tagStrings := make([]string, len(tags))
 	for i, tag := range tags {
-		str := tag.(types.String).ValueString()
-		tagStrings[i] = str
+		str, ok := tag.(types.String)
+		if !ok {
+			resp.Diagnostics.AddError("Client Error", "Failed to convert tag to string, please report issue to provider developers")
+			return
+		}
+		tagStrings[i] = str.ValueString()
 	}
 
 	spadeResp, err := r.Client.UpdateProcess(

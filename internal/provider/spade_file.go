@@ -157,8 +157,12 @@ func (r *SpadeFileResource) Create(ctx context.Context, req resource.CreateReque
 	tags := data.Tags.Elements()
 	tagStrings := make([]string, len(tags))
 	for i, tag := range tags {
-		str := tag.(types.String).ValueString()
-		tagStrings[i] = str
+		str, ok := tag.(types.String)
+		if !ok {
+			resp.Diagnostics.AddError("Client Error", "Failed to convert tag to string, please report issue to provider developers")
+			return
+		}
+		tagStrings[i] = str.ValueString()
 	}
 
 	spadeResp, err := r.Client.CreateFile(
@@ -284,8 +288,12 @@ func (r *SpadeFileResource) Update(ctx context.Context, req resource.UpdateReque
 	tags := data.Tags.Elements()
 	tagStrings := make([]string, len(tags))
 	for i, tag := range tags {
-		str := tag.(types.String).ValueString()
-		tagStrings[i] = str
+		str, ok := tag.(types.String)
+		if !ok {
+			resp.Diagnostics.AddError("Client Error", "Failed to convert tag to string, please report issue to provider developers")
+			return
+		}
+		tagStrings[i] = str.ValueString()
 	}
 
 	spadeResp, err := r.Client.UpdateFile(
