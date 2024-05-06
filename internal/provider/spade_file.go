@@ -55,21 +55,21 @@ func (r *SpadeFileResource) Metadata(ctx context.Context, req resource.MetadataR
 func (r *SpadeFileResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "Spade file",
+		MarkdownDescription: "Represents a user-facing file upload within Spade",
 
 		Attributes: map[string]schema.Attribute{
 			"code": schema.StringAttribute{
-				MarkdownDescription: "Name of the processor",
+				MarkdownDescription: "Name of the file",
 				Required:            true,
 			},
 			"description": schema.StringAttribute{
-				MarkdownDescription: "Description of the processor",
+				MarkdownDescription: "Description of the file",
 				Optional:            true,
 				Computed:            true,
 				Default:             stringdefault.StaticString(""),
 			},
 			"tags": schema.SetAttribute{
-				MarkdownDescription: "Tags for the processor",
+				MarkdownDescription: "Tags for the file",
 				ElementType:         types.StringType,
 				Optional:            true,
 				Computed:            true,
@@ -80,7 +80,7 @@ func (r *SpadeFileResource) Schema(ctx context.Context, req resource.SchemaReque
 				Required:            true,
 			},
 			"processor": schema.Int64Attribute{
-				MarkdownDescription: "Identifier for processor",
+				MarkdownDescription: "Identifier for file processor",
 				Required:            true,
 			},
 			"system_params": schema.StringAttribute{
@@ -103,7 +103,7 @@ func (r *SpadeFileResource) Schema(ctx context.Context, req resource.SchemaReque
 			},
 			"id": schema.Int64Attribute{
 				Computed:            true,
-				MarkdownDescription: "Example identifier",
+				MarkdownDescription: "Identifier of the file",
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.UseStateForUnknown(),
 				},

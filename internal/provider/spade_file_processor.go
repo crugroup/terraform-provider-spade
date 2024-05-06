@@ -45,7 +45,7 @@ func (r *SpadeFileProcessorResource) Metadata(ctx context.Context, req resource.
 func (r *SpadeFileProcessorResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "Spade file processor",
+		MarkdownDescription: "Represents a file processor within Spade",
 
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{
@@ -64,7 +64,7 @@ func (r *SpadeFileProcessorResource) Schema(ctx context.Context, req resource.Sc
 			},
 			"id": schema.Int64Attribute{
 				Computed:            true,
-				MarkdownDescription: "Example identifier",
+				MarkdownDescription: "Identifier of the file processor",
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.UseStateForUnknown(),
 				},

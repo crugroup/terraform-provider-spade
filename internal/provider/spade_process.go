@@ -53,28 +53,28 @@ func (r *SpadeProcessResource) Metadata(ctx context.Context, req resource.Metada
 func (r *SpadeProcessResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "Spade executor",
+		MarkdownDescription: "Represents a user-facing process within Spade",
 
 		Attributes: map[string]schema.Attribute{
 			"code": schema.StringAttribute{
-				MarkdownDescription: "Name of the executor",
+				MarkdownDescription: "Name of the process",
 				Required:            true,
 			},
 			"description": schema.StringAttribute{
-				MarkdownDescription: "Description of the executor",
+				MarkdownDescription: "Description of the process",
 				Optional:            true,
 				Computed:            true,
 				Default:             stringdefault.StaticString(""),
 			},
 			"tags": schema.SetAttribute{
-				MarkdownDescription: "Tags for the executor",
+				MarkdownDescription: "Tags for the process",
 				ElementType:         types.StringType,
 				Optional:            true,
 				Computed:            true,
 				Default:             setdefault.StaticValue(basetypes.NewSetValueMust(types.StringType, []attr.Value{})),
 			},
 			"executor": schema.Int64Attribute{
-				MarkdownDescription: "Identifier for executor",
+				MarkdownDescription: "Identifier to the underlying executor",
 				Required:            true,
 			},
 			"system_params": schema.StringAttribute{
@@ -93,7 +93,7 @@ func (r *SpadeProcessResource) Schema(ctx context.Context, req resource.SchemaRe
 			},
 			"id": schema.Int64Attribute{
 				Computed:            true,
-				MarkdownDescription: "Example identifier",
+				MarkdownDescription: "Identifier of the process",
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.UseStateForUnknown(),
 				},

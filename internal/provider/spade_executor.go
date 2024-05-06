@@ -46,7 +46,7 @@ func (r *SpadeExecutorResource) Metadata(ctx context.Context, req resource.Metad
 func (r *SpadeExecutorResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "Spade executor",
+		MarkdownDescription: "Represents an executor within Spade",
 
 		Attributes: map[string]schema.Attribute{
 			"name": schema.StringAttribute{

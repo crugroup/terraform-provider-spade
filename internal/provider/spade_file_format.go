@@ -42,7 +42,7 @@ func (r *SpadeFileFormatResource) Metadata(ctx context.Context, req resource.Met
 func (r *SpadeFileFormatResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "Spade file format",
+		MarkdownDescription: "Represents a file format within Spade",
 
 		Attributes: map[string]schema.Attribute{
 			"format": schema.StringAttribute{
@@ -51,7 +51,7 @@ func (r *SpadeFileFormatResource) Schema(ctx context.Context, req resource.Schem
 			},
 			"id": schema.Int64Attribute{
 				Computed:            true,
-				MarkdownDescription: "Example identifier",
+				MarkdownDescription: "Identifier of the file format",
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.UseStateForUnknown(),
 				},

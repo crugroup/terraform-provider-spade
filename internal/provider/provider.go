@@ -45,6 +45,7 @@ func (p *SpadeProvider) Metadata(ctx context.Context, req provider.MetadataReque
 
 func (p *SpadeProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		MarkdownDescription: "Terraform provider for managing Spade connectors",
 		Attributes: map[string]schema.Attribute{
 			"url": schema.StringAttribute{
 				MarkdownDescription: "Spade URL",
