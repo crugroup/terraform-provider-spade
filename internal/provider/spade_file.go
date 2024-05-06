@@ -183,7 +183,7 @@ func (r *SpadeFileResource) Create(ctx context.Context, req resource.CreateReque
 	respTags, diag := basetypes.NewSetValueFrom(ctx, types.StringType, spadeResp.Tags)
 	resp.Diagnostics.Append(diag...)
 	if resp.Diagnostics.HasError() {
-		resp.Diagnostics.AddError("Client Error", "fuck1")
+		resp.Diagnostics.AddError("Client Error", "Unable to parse tags")
 		return
 	}
 	data.Tags = respTags
@@ -311,7 +311,7 @@ func (r *SpadeFileResource) Update(ctx context.Context, req resource.UpdateReque
 	respTags, diag := basetypes.NewSetValueFrom(ctx, types.StringType, spadeResp.Tags)
 	resp.Diagnostics.Append(diag...)
 	if resp.Diagnostics.HasError() {
-		resp.Diagnostics.AddError("Client Error", "fuck1")
+		resp.Diagnostics.AddError("Client Error", "Unable to parse tags")
 		return
 	}
 	data.Tags = respTags
