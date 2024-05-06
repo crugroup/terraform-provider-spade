@@ -14,8 +14,8 @@ Terraform provider for managing Spade connectors
 
 ```terraform
 provider "spade" {
-  url = "http://localhost"
-  email = "spade@crugroup.com"
+  url      = "http://localhost"
+  email    = "spade@crugroup.com"
   password = "spadespadespade"
 }
 ```
