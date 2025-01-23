@@ -98,6 +98,8 @@ func (p *SpadeProvider) Resources(ctx context.Context) []func() resource.Resourc
 		NewSpadeFileFormatResource,
 		NewSpadeProcessResource,
 		NewSpadeFileResource,
+		NewSpadeUserResource,
+		NewSpadeGroupResource,
 	}
 }
 
