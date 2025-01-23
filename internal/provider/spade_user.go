@@ -12,6 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setdefault"
@@ -39,6 +40,7 @@ type SpadeUserResourceModel struct {
 	FirstName types.String `tfsdk:"first_name"`
 	LastName  types.String `tfsdk:"last_name"`
 	Email     types.String `tfsdk:"email"`
+	IsActive  types.Bool   `tfsdk:"active"`
 	Groups    types.Set    `tfsdk:"groups"`
 }
 
@@ -67,6 +69,12 @@ func (r *SpadeUserResource) Schema(ctx context.Context, req resource.SchemaReque
 			"email": schema.StringAttribute{
 				MarkdownDescription: "Email address",
 				Required:            true,
+			},
+			"active": schema.BoolAttribute{
+				MarkdownDescription: "Whether or not the account is active",
+				Optional:            true,
+				Computed:            true,
+				Default:             booldefault.StaticBool(true),
 			},
 			"groups": schema.SetAttribute{
 				MarkdownDescription: "Set of group identifiers",
@@ -130,6 +138,7 @@ func (r *SpadeUserResource) Create(ctx context.Context, req resource.CreateReque
 		data.FirstName.ValueString(),
 		data.LastName.ValueString(),
 		data.Email.ValueString(),
+		data.IsActive.ValueBool(),
 		groupIDs,
 	)
 	if err != nil {
@@ -142,6 +151,7 @@ func (r *SpadeUserResource) Create(ctx context.Context, req resource.CreateReque
 	data.FirstName = types.StringValue(spadeResp.FirstName)
 	data.LastName = types.StringValue(spadeResp.LastName)
 	data.Email = types.StringValue(spadeResp.Email)
+	data.IsActive = types.BoolValue(spadeResp.IsActive)
 	respGroups, diag := basetypes.NewSetValueFrom(ctx, types.Int64Type, spadeResp.Groups)
 	resp.Diagnostics.Append(diag...)
 	if resp.Diagnostics.HasError() {
@@ -180,6 +190,7 @@ func (r *SpadeUserResource) Read(ctx context.Context, req resource.ReadRequest, 
 	data.FirstName = types.StringValue(spadeResp.FirstName)
 	data.LastName = types.StringValue(spadeResp.LastName)
 	data.Email = types.StringValue(spadeResp.Email)
+	data.IsActive = types.BoolValue(spadeResp.IsActive)
 	respGroups, diag := basetypes.NewSetValueFrom(ctx, types.Int64Type, spadeResp.Groups)
 	resp.Diagnostics.Append(diag...)
 	if resp.Diagnostics.HasError() {
@@ -217,6 +228,7 @@ func (r *SpadeUserResource) Update(ctx context.Context, req resource.UpdateReque
 		data.FirstName.ValueString(),
 		data.LastName.ValueString(),
 		data.Email.ValueString(),
+		data.IsActive.ValueBool(),
 		groupIDs,
 	)
 	if err != nil {
@@ -229,6 +241,7 @@ func (r *SpadeUserResource) Update(ctx context.Context, req resource.UpdateReque
 	data.FirstName = types.StringValue(spadeResp.FirstName)
 	data.LastName = types.StringValue(spadeResp.LastName)
 	data.Email = types.StringValue(spadeResp.Email)
+	data.IsActive = types.BoolValue(spadeResp.IsActive)
 	respGroups, diag := basetypes.NewSetValueFrom(ctx, types.Int64Type, spadeResp.Groups)
 	resp.Diagnostics.Append(diag...)
 	if resp.Diagnostics.HasError() {

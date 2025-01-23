@@ -13,6 +13,7 @@ type SpadeUserCreateRequest struct {
 	FirstName string  `json:"first_name"`
 	LastName  string  `json:"last_name"`
 	Email     string  `json:"email"`
+	IsActive  bool    `json:"is_active"`
 	Groups    []int64 `json:"groups"`
 }
 
@@ -21,14 +22,16 @@ type SpadeUserReadResponse struct {
 	FirstName string  `json:"first_name"`
 	LastName  string  `json:"last_name"`
 	Email     string  `json:"email"`
+	IsActive  bool    `json:"is_active"`
 	Groups    []int64 `json:"groups"`
 }
 
-func (c *SpadeClient) CreateUser(firstName, lastName, email string, groups []int64) (*SpadeUserReadResponse, error) {
+func (c *SpadeClient) CreateUser(firstName, lastName, email string, isActive bool, groups []int64) (*SpadeUserReadResponse, error) {
 	httpReqBody, err := json.Marshal(SpadeUserCreateRequest{
 		FirstName: firstName,
 		LastName:  lastName,
 		Email:     email,
+		IsActive:  isActive,
 		Groups:    groups,
 	})
 	if err != nil {
@@ -99,11 +102,12 @@ func (c *SpadeClient) ReadUser(id int64) (*SpadeUserReadResponse, error) {
 	return &resp, nil
 }
 
-func (c *SpadeClient) UpdateUser(id int64, firstName, lastName, email string, groups []int64) (*SpadeUserReadResponse, error) {
+func (c *SpadeClient) UpdateUser(id int64, firstName, lastName, email string, isActive bool, groups []int64) (*SpadeUserReadResponse, error) {
 	httpReqBody, err := json.Marshal(SpadeUserCreateRequest{
 		FirstName: firstName,
 		LastName:  lastName,
 		Email:     email,
+		IsActive:  isActive,
 		Groups:    groups,
 	})
 	if err != nil {
