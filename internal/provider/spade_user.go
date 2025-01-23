@@ -77,7 +77,7 @@ func (r *SpadeUserResource) Schema(ctx context.Context, req resource.SchemaReque
 				Default:             booldefault.StaticBool(true),
 			},
 			"groups": schema.SetAttribute{
-				MarkdownDescription: "Set of group identifiers",
+				MarkdownDescription: "Group identifiers",
 				ElementType:         types.Int64Type,
 				Optional:            true,
 				Computed:            true,
