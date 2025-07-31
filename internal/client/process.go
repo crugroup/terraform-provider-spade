@@ -16,6 +16,7 @@ type SpadeProcessCreateRequest struct {
 	Executor     int64                  `json:"executor"`
 	SystemParams map[string]interface{} `json:"system_params"`
 	UserParams   map[string]interface{} `json:"user_params"`
+	VariableSets []int64                `json:"variable_sets"`
 }
 
 type SpadeProcessReadResponse struct {
@@ -26,9 +27,10 @@ type SpadeProcessReadResponse struct {
 	Executor     int64                  `json:"executor"`
 	SystemParams map[string]interface{} `json:"system_params"`
 	UserParams   map[string]interface{} `json:"user_params"`
+	VariableSets []int64                `json:"variable_sets"`
 }
 
-func (c *SpadeClient) CreateProcess(code, description string, tags []string, executor int64, systemParams, userParams map[string]interface{}) (*SpadeProcessReadResponse, error) {
+func (c *SpadeClient) CreateProcess(code, description string, tags []string, executor int64, systemParams, userParams map[string]interface{}, variableSets []int64) (*SpadeProcessReadResponse, error) {
 	httpReqBody, err := json.Marshal(SpadeProcessCreateRequest{
 		Code:         code,
 		Description:  description,
@@ -36,6 +38,7 @@ func (c *SpadeClient) CreateProcess(code, description string, tags []string, exe
 		Executor:     executor,
 		SystemParams: systemParams,
 		UserParams:   userParams,
+		VariableSets: variableSets,
 	})
 	if err != nil {
 		return nil, err
@@ -100,7 +103,7 @@ func (c *SpadeClient) ReadProcess(id int64) (*SpadeProcessReadResponse, error) {
 	return &resp, nil
 }
 
-func (c *SpadeClient) UpdateProcess(id int64, code, description string, tags []string, executor int64, systemParams, userParams map[string]interface{}) (*SpadeProcessReadResponse, error) {
+func (c *SpadeClient) UpdateProcess(id int64, code, description string, tags []string, executor int64, systemParams, userParams map[string]interface{}, variableSets []int64) (*SpadeProcessReadResponse, error) {
 	httpReqBody, err := json.Marshal(SpadeProcessCreateRequest{
 		Code:         code,
 		Description:  description,
@@ -108,6 +111,7 @@ func (c *SpadeClient) UpdateProcess(id int64, code, description string, tags []s
 		Executor:     executor,
 		SystemParams: systemParams,
 		UserParams:   userParams,
+		VariableSets: variableSets,
 	})
 	if err != nil {
 		return nil, err

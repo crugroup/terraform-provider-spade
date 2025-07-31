@@ -18,6 +18,7 @@ type SpadeFileCreateRequest struct {
 	SystemParams  map[string]interface{} `json:"system_params"`
 	UserParams    map[string]interface{} `json:"user_params"`
 	LinkedProcess *int64                 `json:"linked_process"`
+	VariableSets  []int64                `json:"variable_sets"`
 }
 
 type SpadeFileReadResponse struct {
@@ -30,9 +31,10 @@ type SpadeFileReadResponse struct {
 	SystemParams  map[string]interface{} `json:"system_params"`
 	UserParams    map[string]interface{} `json:"user_params"`
 	LinkedProcess int64                  `json:"linked_process"`
+	VariableSets  []int64                `json:"variable_sets"`
 }
 
-func (c *SpadeClient) CreateFile(code, description string, tags []string, format, processor int64, systemParams, userParams map[string]interface{}, linkedProcess int64) (*SpadeFileReadResponse, error) {
+func (c *SpadeClient) CreateFile(code, description string, tags []string, format, processor int64, systemParams, userParams map[string]interface{}, linkedProcess int64, variableSets []int64) (*SpadeFileReadResponse, error) {
 	linkedProcessPtr := &linkedProcess
 	if linkedProcess == 0 {
 		linkedProcessPtr = nil
@@ -46,6 +48,7 @@ func (c *SpadeClient) CreateFile(code, description string, tags []string, format
 		SystemParams:  systemParams,
 		UserParams:    userParams,
 		LinkedProcess: linkedProcessPtr,
+		VariableSets:  variableSets,
 	})
 	if err != nil {
 		return nil, err
@@ -115,7 +118,7 @@ func (c *SpadeClient) ReadFile(id int64) (*SpadeFileReadResponse, error) {
 	return &resp, nil
 }
 
-func (c *SpadeClient) UpdateFile(id int64, code, description string, tags []string, format, processor int64, systemParams, userParams map[string]interface{}, linkedProcess int64) (*SpadeFileReadResponse, error) {
+func (c *SpadeClient) UpdateFile(id int64, code, description string, tags []string, format, processor int64, systemParams, userParams map[string]interface{}, linkedProcess int64, variableSets []int64) (*SpadeFileReadResponse, error) {
 	linkedProcessPtr := &linkedProcess
 	if linkedProcess == 0 {
 		linkedProcessPtr = nil
@@ -129,6 +132,7 @@ func (c *SpadeClient) UpdateFile(id int64, code, description string, tags []stri
 		SystemParams:  systemParams,
 		UserParams:    userParams,
 		LinkedProcess: linkedProcessPtr,
+		VariableSets:  variableSets,
 	})
 	if err != nil {
 		return nil, err

@@ -100,11 +100,16 @@ func (p *SpadeProvider) Resources(ctx context.Context) []func() resource.Resourc
 		NewSpadeFileResource,
 		NewSpadeUserResource,
 		NewSpadeGroupResource,
+		NewSpadeVariableResource,
+		NewSpadeSecretVariableResource,
+		NewSpadeVariableSetResource,
 	}
 }
 
 func (p *SpadeProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{}
+	return []func() datasource.DataSource{
+		NewSpadeVariableDataSource,
+	}
 }
 
 func (p *SpadeProvider) Functions(ctx context.Context) []func() function.Function {

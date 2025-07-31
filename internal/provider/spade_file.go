@@ -46,6 +46,7 @@ type SpadeFileResourceModel struct {
 	SystemParams  jsontypes.Normalized `tfsdk:"system_params"`
 	UserParams    jsontypes.Normalized `tfsdk:"user_params"`
 	LinkedProcess types.Int64          `tfsdk:"linked_process"`
+	VariableSets  types.Set            `tfsdk:"variable_sets"`
 }
 
 func (r *SpadeFileResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -100,6 +101,13 @@ func (r *SpadeFileResource) Schema(ctx context.Context, req resource.SchemaReque
 			"linked_process": schema.Int64Attribute{
 				MarkdownDescription: "Identifier for linked process",
 				Optional:            true,
+			},
+			"variable_sets": schema.SetAttribute{
+				MarkdownDescription: "Variable set identifiers",
+				ElementType:         types.Int64Type,
+				Optional:            true,
+				Computed:            true,
+				Default:             setdefault.StaticValue(basetypes.NewSetValueMust(types.Int64Type, []attr.Value{})),
 			},
 			"id": schema.Int64Attribute{
 				Computed:            true,
@@ -165,6 +173,17 @@ func (r *SpadeFileResource) Create(ctx context.Context, req resource.CreateReque
 		tagStrings[i] = str.ValueString()
 	}
 
+	variableSets := data.VariableSets.Elements()
+	variableSetIDs := make([]int64, len(variableSets))
+	for i, vs := range variableSets {
+		id, ok := vs.(types.Int64)
+		if !ok {
+			resp.Diagnostics.AddError("Client Error", "Failed to convert variable set ID to int, please report issue to provider developers")
+			return
+		}
+		variableSetIDs[i] = id.ValueInt64()
+	}
+
 	spadeResp, err := r.Client.CreateFile(
 		data.Code.ValueString(),
 		data.Description.ValueString(),
@@ -174,6 +193,7 @@ func (r *SpadeFileResource) Create(ctx context.Context, req resource.CreateReque
 		systemParamsJson,
 		userParamsJson,
 		data.LinkedProcess.ValueInt64(),
+		variableSetIDs,
 	)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create file, got error: %s", err))
@@ -209,6 +229,13 @@ func (r *SpadeFileResource) Create(ctx context.Context, req resource.CreateReque
 	if spadeResp.LinkedProcess == 0 {
 		data.LinkedProcess = basetypes.NewInt64Null()
 	}
+	respVariableSets, diag := basetypes.NewSetValueFrom(ctx, types.Int64Type, spadeResp.VariableSets)
+	resp.Diagnostics.Append(diag...)
+	if resp.Diagnostics.HasError() {
+		resp.Diagnostics.AddError("Client Error", "Unable to parse variable sets")
+		return
+	}
+	data.VariableSets = respVariableSets
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -263,6 +290,13 @@ func (r *SpadeFileResource) Read(ctx context.Context, req resource.ReadRequest, 
 	if spadeResp.LinkedProcess == 0 {
 		data.LinkedProcess = basetypes.NewInt64Null()
 	}
+	respVariableSets, diag := basetypes.NewSetValueFrom(ctx, types.Int64Type, spadeResp.VariableSets)
+	resp.Diagnostics.Append(diag...)
+	if resp.Diagnostics.HasError() {
+		resp.Diagnostics.AddError("Client Error", "Unable to parse variable sets")
+		return
+	}
+	data.VariableSets = respVariableSets
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -301,6 +335,17 @@ func (r *SpadeFileResource) Update(ctx context.Context, req resource.UpdateReque
 		tagStrings[i] = str.ValueString()
 	}
 
+	variableSets := data.VariableSets.Elements()
+	variableSetIDs := make([]int64, len(variableSets))
+	for i, vs := range variableSets {
+		id, ok := vs.(types.Int64)
+		if !ok {
+			resp.Diagnostics.AddError("Client Error", "Failed to convert variable set ID to int, please report issue to provider developers")
+			return
+		}
+		variableSetIDs[i] = id.ValueInt64()
+	}
+
 	spadeResp, err := r.Client.UpdateFile(
 		data.Id.ValueInt64(),
 		data.Code.ValueString(),
@@ -311,6 +356,7 @@ func (r *SpadeFileResource) Update(ctx context.Context, req resource.UpdateReque
 		systemParamsJson,
 		userParamsJson,
 		data.LinkedProcess.ValueInt64(),
+		variableSetIDs,
 	)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update file, got error: %s", err))
@@ -346,6 +392,13 @@ func (r *SpadeFileResource) Update(ctx context.Context, req resource.UpdateReque
 	if spadeResp.LinkedProcess == 0 {
 		data.LinkedProcess = basetypes.NewInt64Null()
 	}
+	respVariableSets, diag := basetypes.NewSetValueFrom(ctx, types.Int64Type, spadeResp.VariableSets)
+	resp.Diagnostics.Append(diag...)
+	if resp.Diagnostics.HasError() {
+		resp.Diagnostics.AddError("Client Error", "Unable to parse variable sets")
+		return
+	}
+	data.VariableSets = respVariableSets
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -384,7 +437,8 @@ func (r *SpadeFileResource) ImportState(ctx context.Context, req resource.Import
 				Id: types.Int64Value(id),
 				// need to set something here, otherwise terraform can't infer the inner
 				// type of the set and panics
-				Tags: basetypes.NewSetValueMust(types.StringType, []attr.Value{}),
+				Tags:         basetypes.NewSetValueMust(types.StringType, []attr.Value{}),
+				VariableSets: basetypes.NewSetValueMust(types.Int64Type, []attr.Value{}),
 			},
 		)...,
 	)
