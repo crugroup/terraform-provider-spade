@@ -41,6 +41,7 @@ resource "spade_file" "my_file" {
 - `system_params` (String) JSON of system parameters
 - `tags` (Set of String) Tags for the file
 - `user_params` (String) JSON of user parameters (JsonSchema form)
+- `variable_sets` (Set of Number) Variable set identifiers
 
 ### Read-Only
 
