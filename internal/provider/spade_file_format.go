@@ -33,8 +33,8 @@ type SpadeFileFormatResource struct {
 
 // SpadeFileFormatResourceModel describes the resource data model.
 type SpadeFileFormatResourceModel struct {
-	Id     types.Int64  `tfsdk:"id"`
-	Format types.String `tfsdk:"format"`
+	Id     types.Int64          `tfsdk:"id"`
+	Format types.String         `tfsdk:"format"`
 	Schema jsontypes.Normalized `tfsdk:"schema"`
 }
 
