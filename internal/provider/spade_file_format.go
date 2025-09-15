@@ -9,10 +9,12 @@ import (
 	"strconv"
 	spade "terraform-provider-spade/internal/client"
 
+	"github.com/hashicorp/terraform-plugin-framework-jsontypes/jsontypes"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -33,6 +35,7 @@ type SpadeFileFormatResource struct {
 type SpadeFileFormatResourceModel struct {
 	Id     types.Int64  `tfsdk:"id"`
 	Format types.String `tfsdk:"format"`
+	Schema jsontypes.Normalized `tfsdk:"schema"`
 }
 
 func (r *SpadeFileFormatResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
@@ -55,6 +58,13 @@ func (r *SpadeFileFormatResource) Schema(ctx context.Context, req resource.Schem
 				PlanModifiers: []planmodifier.Int64{
 					int64planmodifier.UseStateForUnknown(),
 				},
+			},
+			"schema": schema.StringAttribute{
+				MarkdownDescription: "JSON of the required file schema",
+				Optional:            true,
+				Computed:            true,
+				CustomType:          jsontypes.NormalizedType{},
+				Default:             stringdefault.StaticString("{}"),
 			},
 		},
 	}
@@ -90,7 +100,7 @@ func (r *SpadeFileFormatResource) Create(ctx context.Context, req resource.Creat
 		return
 	}
 
-	spadeResp, err := r.Client.CreateFileFormat(data.Format.ValueString())
+	spadeResp, err := r.Client.CreateFileFormat(data.Format.ValueString(), data.Schema.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create file format, got error: %s", err))
 		return
@@ -99,6 +109,9 @@ func (r *SpadeFileFormatResource) Create(ctx context.Context, req resource.Creat
 	// Update the model with the response data
 	data.Id = types.Int64Value(spadeResp.Id)
 	data.Format = types.StringValue(spadeResp.Format)
+	if spadeResp.Schema != "" {
+		data.Schema = jsontypes.NewNormalizedValue(spadeResp.Schema)
+	}
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -128,6 +141,9 @@ func (r *SpadeFileFormatResource) Read(ctx context.Context, req resource.ReadReq
 	// Update the model with the response data
 	data.Id = types.Int64Value(spadeResp.Id)
 	data.Format = types.StringValue(spadeResp.Format)
+	if spadeResp.Schema != "" {
+		data.Schema = jsontypes.NewNormalizedValue(spadeResp.Schema)
+	}
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
@@ -146,6 +162,7 @@ func (r *SpadeFileFormatResource) Update(ctx context.Context, req resource.Updat
 	spadeResp, err := r.Client.UpdateFileFormat(
 		data.Id.ValueInt64(),
 		data.Format.ValueString(),
+		data.Schema.ValueString(),
 	)
 
 	if err != nil {
@@ -156,6 +173,9 @@ func (r *SpadeFileFormatResource) Update(ctx context.Context, req resource.Updat
 	// Update the model with the response data
 	data.Id = types.Int64Value(spadeResp.Id)
 	data.Format = types.StringValue(spadeResp.Format)
+	if spadeResp.Schema != "" {
+		data.Schema = jsontypes.NewNormalizedValue(spadeResp.Schema)
+	}
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)

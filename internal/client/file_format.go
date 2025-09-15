@@ -11,16 +11,19 @@ import (
 
 type SpadeFileFormatCreateRequest struct {
 	Format string `json:"format"`
+	Schema string `json:"schema,omitempty"`
 }
 
 type SpadeFileFormatReadResponse struct {
 	Id     int64  `json:"id"`
 	Format string `json:"format"`
+	Schema string `json:"schema,omitempty"`
 }
 
-func (c *SpadeClient) CreateFileFormat(format string) (*SpadeFileFormatReadResponse, error) {
+func (c *SpadeClient) CreateFileFormat(format string, schema string) (*SpadeFileFormatReadResponse, error) {
 	httpReqBody, err := json.Marshal(SpadeFileFormatCreateRequest{
 		Format: format,
+		Schema: schema,
 	})
 	if err != nil {
 		return nil, err
@@ -90,9 +93,10 @@ func (c *SpadeClient) ReadFileFormat(id int64) (*SpadeFileFormatReadResponse, er
 	return &resp, nil
 }
 
-func (c *SpadeClient) UpdateFileFormat(id int64, format string) (*SpadeFileFormatReadResponse, error) {
+func (c *SpadeClient) UpdateFileFormat(id int64, format string, schema string) (*SpadeFileFormatReadResponse, error) {
 	httpReqBody, err := json.Marshal(SpadeFileFormatCreateRequest{
 		Format: format,
+		Schema: schema,
 	})
 	if err != nil {
 		return nil, err
