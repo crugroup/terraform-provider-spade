@@ -10,21 +10,28 @@ import (
 )
 
 type SpadeFileFormatCreateRequest struct {
-	Format string `json:"format"`
-	Schema string `json:"schema,omitempty"`
+	Format             string          `json:"format"`
+	FrictionlessSchema json.RawMessage `json:"frictionless_schema"` // Use json.RawMessage for raw JSON
 }
 
 type SpadeFileFormatReadResponse struct {
-	Id     int64  `json:"id"`
-	Format string `json:"format"`
-	Schema string `json:"schema,omitempty"`
+	Id                 int64           `json:"id"`
+	Format             string          `json:"format"`
+	FrictionlessSchema json.RawMessage `json:"frictionless_schema"` // Use json.RawMessage for raw JSON
 }
 
 func (c *SpadeClient) CreateFileFormat(format string, schema string) (*SpadeFileFormatReadResponse, error) {
-	httpReqBody, err := json.Marshal(SpadeFileFormatCreateRequest{
-		Format: format,
-		Schema: schema,
-	})
+	fmt.Printf("DEBUG: CreateFileFormat called with format=%s, schema=%s\n", format, schema)
+	reqData := SpadeFileFormatCreateRequest{
+		Format:             format,
+		FrictionlessSchema: json.RawMessage(schema), // Convert string to json.RawMessage
+	}
+	
+	httpReqBody, err := json.Marshal(reqData)
+	if err != nil {
+		return nil, err
+	}
+	
 	if err != nil {
 		return nil, err
 	}
@@ -94,10 +101,12 @@ func (c *SpadeClient) ReadFileFormat(id int64) (*SpadeFileFormatReadResponse, er
 }
 
 func (c *SpadeClient) UpdateFileFormat(id int64, format string, schema string) (*SpadeFileFormatReadResponse, error) {
-	httpReqBody, err := json.Marshal(SpadeFileFormatCreateRequest{
-		Format: format,
-		Schema: schema,
-	})
+	reqData := SpadeFileFormatCreateRequest{
+		Format:             format,
+		FrictionlessSchema: json.RawMessage(schema), // Convert string to json.RawMessage
+	}
+	
+	httpReqBody, err := json.Marshal(reqData)
 	if err != nil {
 		return nil, err
 	}

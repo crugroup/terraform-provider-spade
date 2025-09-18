@@ -100,7 +100,10 @@ func (r *SpadeFileFormatResource) Create(ctx context.Context, req resource.Creat
 		return
 	}
 
-	spadeResp, err := r.Client.CreateFileFormat(data.Format.ValueString(), data.Schema.ValueString())
+	schemaValue := data.Schema.ValueString()
+	fmt.Printf("DEBUG: Provider - schema value: %s\n", schemaValue)
+	
+	spadeResp, err := r.Client.CreateFileFormat(data.Format.ValueString(), schemaValue)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create file format, got error: %s", err))
 		return
@@ -109,8 +112,8 @@ func (r *SpadeFileFormatResource) Create(ctx context.Context, req resource.Creat
 	// Update the model with the response data
 	data.Id = types.Int64Value(spadeResp.Id)
 	data.Format = types.StringValue(spadeResp.Format)
-	if spadeResp.Schema != "" {
-		data.Schema = jsontypes.NewNormalizedValue(spadeResp.Schema)
+	if len(spadeResp.FrictionlessSchema) > 0 {
+		data.Schema = jsontypes.NewNormalizedValue(string(spadeResp.FrictionlessSchema))
 	}
 
 	// Save data into Terraform state
@@ -141,8 +144,8 @@ func (r *SpadeFileFormatResource) Read(ctx context.Context, req resource.ReadReq
 	// Update the model with the response data
 	data.Id = types.Int64Value(spadeResp.Id)
 	data.Format = types.StringValue(spadeResp.Format)
-	if spadeResp.Schema != "" {
-		data.Schema = jsontypes.NewNormalizedValue(spadeResp.Schema)
+	if len(spadeResp.FrictionlessSchema) > 0 {
+		data.Schema = jsontypes.NewNormalizedValue(string(spadeResp.FrictionlessSchema))
 	}
 
 	// Save updated data into Terraform state
@@ -159,12 +162,14 @@ func (r *SpadeFileFormatResource) Update(ctx context.Context, req resource.Updat
 		return
 	}
 
+	schemaValue := data.Schema.ValueString()
+	fmt.Printf("DEBUG: Provider Update - schema value: %s\n", schemaValue)
+	
 	spadeResp, err := r.Client.UpdateFileFormat(
 		data.Id.ValueInt64(),
 		data.Format.ValueString(),
-		data.Schema.ValueString(),
+		schemaValue,
 	)
-
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update file format, got error: %s", err))
 		return
@@ -173,8 +178,8 @@ func (r *SpadeFileFormatResource) Update(ctx context.Context, req resource.Updat
 	// Update the model with the response data
 	data.Id = types.Int64Value(spadeResp.Id)
 	data.Format = types.StringValue(spadeResp.Format)
-	if spadeResp.Schema != "" {
-		data.Schema = jsontypes.NewNormalizedValue(spadeResp.Schema)
+	if len(spadeResp.FrictionlessSchema) > 0 {
+		data.Schema = jsontypes.NewNormalizedValue(string(spadeResp.FrictionlessSchema))
 	}
 
 	// Save updated data into Terraform state
