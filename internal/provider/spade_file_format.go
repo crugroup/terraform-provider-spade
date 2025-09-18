@@ -102,7 +102,7 @@ func (r *SpadeFileFormatResource) Create(ctx context.Context, req resource.Creat
 
 	schemaValue := data.Schema.ValueString()
 	fmt.Printf("DEBUG: Provider - schema value: %s\n", schemaValue)
-	
+
 	spadeResp, err := r.Client.CreateFileFormat(data.Format.ValueString(), schemaValue)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create file format, got error: %s", err))
@@ -164,7 +164,7 @@ func (r *SpadeFileFormatResource) Update(ctx context.Context, req resource.Updat
 
 	schemaValue := data.Schema.ValueString()
 	fmt.Printf("DEBUG: Provider Update - schema value: %s\n", schemaValue)
-	
+
 	spadeResp, err := r.Client.UpdateFileFormat(
 		data.Id.ValueInt64(),
 		data.Format.ValueString(),

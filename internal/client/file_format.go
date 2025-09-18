@@ -26,12 +26,12 @@ func (c *SpadeClient) CreateFileFormat(format string, schema string) (*SpadeFile
 		Format:             format,
 		FrictionlessSchema: json.RawMessage(schema), // Convert string to json.RawMessage
 	}
-	
+
 	httpReqBody, err := json.Marshal(reqData)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +105,7 @@ func (c *SpadeClient) UpdateFileFormat(id int64, format string, schema string) (
 		Format:             format,
 		FrictionlessSchema: json.RawMessage(schema), // Convert string to json.RawMessage
 	}
-	
+
 	httpReqBody, err := json.Marshal(reqData)
 	if err != nil {
 		return nil, err
