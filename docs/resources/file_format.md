@@ -25,6 +25,10 @@ resource "spade_file_format" "my_format" {
 
 - `format` (String) File format name
 
+### Optional
+
+- `schema` (String) JSON of the required file schema
+
 ### Read-Only
 
 - `id` (Number) Identifier of the file format
