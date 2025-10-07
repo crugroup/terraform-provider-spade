@@ -21,7 +21,6 @@ type SpadeFileFormatReadResponse struct {
 }
 
 func (c *SpadeClient) CreateFileFormat(format string, schema string) (*SpadeFileFormatReadResponse, error) {
-	fmt.Printf("DEBUG: CreateFileFormat called with format=%s, schema=%s\n", format, schema)
 	reqData := SpadeFileFormatCreateRequest{
 		Format:             format,
 		FrictionlessSchema: json.RawMessage(schema), // Convert string to json.RawMessage
